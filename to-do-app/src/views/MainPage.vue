@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 
 const name = ref(''); // dobim glede na to kdo je log-inan
 const newTask = ref('');
-const tasks = ref([]);
+const tasks = ref([]); 
 
 const getTasks = async() => {
     const res = await fetch('http://localhost:8080/tasks', {
