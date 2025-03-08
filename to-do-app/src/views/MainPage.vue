@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted} from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import draggable from 'vuedraggable'
 import { useRouter } from 'vue-router'
 
@@ -40,6 +40,7 @@ const addTask = async() => {
   }
 }
 
+// FIX!!!
 const deleteTaskFromDB = async(taskID) => { 
     const res = await fetch('http://localhost:8080/tasks/' + taskID, {
         method: 'DELETE',
@@ -48,15 +49,15 @@ const deleteTaskFromDB = async(taskID) => {
         }
     })
     console.log(res);
- }
-
-const clearAll = () => {
-    tasks.value = [];
-    newTask.value = '';
 }
 
 const deleteTask = (index) => {
     tasks.value.splice(index, 1);
+}
+
+const clearAll = () => {
+    tasks.value = [];
+    newTask.value = '';
 }
 
 const toggleCheckbox = (index) => {
