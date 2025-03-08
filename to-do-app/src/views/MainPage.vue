@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, onMounted} from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import draggable from 'vuedraggable'
 import { useRouter } from 'vue-router'
 
 const name = ref(''); // dobim glede na to kdo je log-inan
 const newTask = ref('');
-const tasks = ref([]);
+const tasks = ref([]); 
 
 const getTasks = async() => {
     const res = await fetch('http://localhost:8080/tasks', {
@@ -17,6 +17,7 @@ const getTasks = async() => {
 
 const addTaskToDB = async(name, checked) => { 
     const body = JSON.stringify({name, checked}) 
+    console.log("body: " + body);
     const res = await fetch('http://localhost:8080/tasks', {
         method: 'POST',
         body,
@@ -28,21 +29,35 @@ const addTaskToDB = async(name, checked) => {
  }
 
 const addTask = async() => {
-  const task = newTask.value.trim();
-  if (task) { 
-    tasks.value.push({name: task, checked: false});
-    newTask.value = ''; // Clear the input field after adding the task
-    await addTaskToDB({name: task, checked: false});
+ // const task = newTask.value.trim();
+  console.log("žž:  " + {name: newTask.value, checked: false});
+  if (newTask.value) { 
+    //tasks.value.push({name: task, checked: false});
+
+    tasks.value = [...tasks.value, {name: newTask.value, checked: false}];
+    await addTaskToDB(newTask.value, false);
+    newTask.value = ''; // Cleara input field
   }
+}
+
+// FIX!!!
+const deleteTaskFromDB = async(taskID) => { 
+    const res = await fetch('http://localhost:8080/tasks/' + taskID, {
+        method: 'DELETE',
+        headers: {
+            'content-type': 'application/json'
+        }
+    })
+    console.log(res);
+}
+
+const deleteTask = (index) => {
+    tasks.value.splice(index, 1);
 }
 
 const clearAll = () => {
     tasks.value = [];
     newTask.value = '';
-}
-
-const deleteTask = (index) => {
-    tasks.value.splice(index, 1);
 }
 
 const toggleCheckbox = (index) => {
