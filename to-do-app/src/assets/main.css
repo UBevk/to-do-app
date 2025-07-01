@@ -1,10 +1,10 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
   font-weight: normal;
+  align-items: center;
 }
 
 a, .green {
@@ -20,14 +20,15 @@ a, .green {
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
+@media (max-width: 600px) {
+    #app {
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+  
+    a, .green {
+      padding: 2px;
+      font-size: 0.9rem;
+    }
   }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-}
+  
