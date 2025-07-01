@@ -131,7 +131,7 @@ const blackTextBackgrounds = ['skiresort_wallpaper.jpg'];
 const whiteTextBackgrounds = ['praprot.jpg', 'sunset_wallpaper.jpg', 'workspace_wallpaper.jpg'];
 
 
-const selectedBackground = ref(); // default wallpaper
+const selectedBackground = ref('praprot.jpg'); // default wallpaper
 const showMenu = ref(false);
 const showMainMenu = ref(false);
 
@@ -230,7 +230,7 @@ const textColorClass = computed(() => {
 <template>
 <div v-if="!loading" class="center-wrapper"
     :class="[textColorClass, { selected: true }]"
-    :style="{ background: `url('/backgrounds/${selectedBackground}') no-repeat center center fixed`, 
+    :style="{ background: `url('/to-do-app/backgrounds/${selectedBackground}') no-repeat center center fixed`, 
               backgroundSize: 'cover',}" >
 
 
@@ -297,11 +297,12 @@ const textColorClass = computed(() => {
       :key="index" 
       class="background-thumb"
       :class="{ selected: selectedBackground === background }"
-      :style="{ backgroundImage: `url('../../public/backgrounds/${background}')` }"
+      :style="{ backgroundImage: `url('/to-do-app/backgrounds/${background}')` }"
       @click="changeBackground(background)"
     ></div>
   </div>
 </div>
+
 
 <div class="main-menu">
     <img @click="toggleMainMenu" src="../../public/icons/main-menu.png" alt="main-menu-icon" :class="[iconColorClass, 'main-menu-icon']">
@@ -665,6 +666,21 @@ const textColorClass = computed(() => {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
+/*telefon*/
+@media (max-width: 640px) {
+  .tasks, #newTask {
+    width: 90vw; /* Use 90% of the viewport width */
+    max-width: 600px; /* Limit max width */
+  }
+
+  .task-title, #newTaskField {
+    width: 70vw; /* Allow input fields to shrink on smaller screens */
+  }
+
+  #title {
+    font-size: 28px; /* Smaller font on mobile */
+  }
+}
 
 
 </style>

@@ -1,17 +1,8 @@
-import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// https://vitejs.dev/config/
+// ✅ Change this to your repo name
 export default defineConfig({
+  base: '/to-do-app/',
   plugins: [vue()],
-  server: {
-    port: 3000,
-  },    
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  }
 })
