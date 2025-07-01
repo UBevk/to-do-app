@@ -7,7 +7,6 @@ app.use(cors({
   origin: 'https://ubevk.github.io'  // your GitHub Pages URL
 }));
 
-app.use(cors());
 app.use(express.json());
 
 /*mongoose.connect('mongodb://localhost:27017/tasks');*/
