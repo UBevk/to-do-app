@@ -1,11 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const app = express();
+
 app.use(cors({
   origin: 'https://ubevk.github.io'  // your GitHub Pages URL
 }));
 
-const app = express();
 app.use(cors());
 app.use(express.json());
 
