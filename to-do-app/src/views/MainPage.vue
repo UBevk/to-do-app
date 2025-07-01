@@ -15,7 +15,7 @@ const preloadImages = (imageUrls) => {
 };
 
 const getTasks = async() => {
-    const res = await fetch('http://localhost:8080/tasks', {
+    const res = await fetch('https://to-do-app-4-u2e6.onrender.com/tasks', {
         method: 'GET',
     })
     const data = await res.json()
