@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import draggable from 'vuedraggable'
 import { useRouter } from 'vue-router'
 
@@ -7,42 +7,44 @@ const name = ref(''); // dobim glede na to kdo je log-inan
 const newTask = ref('');
 const tasks = ref([]); 
 
+const preloadImages = (imageUrls) => {
+  imageUrls.forEach(url => {
+    const img = new Image();
+    img.src = `/backgrounds/${url}`;
+  });
+};
+
 const getTasks = async() => {
     const res = await fetch('http://localhost:8080/tasks', {
         method: 'GET',
     })
     const data = await res.json()
-    return data.map(item => ({name: item.name, checked: item.checked}));
-}
 
-const addTaskToDB = async(name, checked) => { 
-    const body = JSON.stringify({name, checked}) 
-    console.log("body: " + body);
-    const res = await fetch('http://localhost:8080/tasks', {
-        method: 'POST',
-        body,
-        headers: {
-            'content-type': 'application/json'
-        }
-    })
-    console.log(res);
- }
+    return data.sort((a, b) => a.order - b.order).map(item => ({
+        _id: item._id,
+        name: item.name,
+        checked: item.checked,
+        order: item.order
+    })); 
+    //tasks.value = data;
+}
 
 const addTask = async() => {
- // const task = newTask.value.trim();
-  console.log("žž:  " + {name: newTask.value, checked: false});
-  if (newTask.value) { 
-    //tasks.value.push({name: task, checked: false});
+  if (newTask.value.trim()) { 
+    const res = await fetch('http://localhost:8080/tasks', {
+        method: 'POST',
+        body: JSON.stringify({ name: newTask.value, checked: false }),
+        headers: { 'content-type': 'application/json' }
+    })
 
-    tasks.value = [...tasks.value, {name: newTask.value, checked: false}];
-    await addTaskToDB(newTask.value, false);
-    newTask.value = ''; // Cleara input field
-  }
+    const savedTask = await res.json();
+    tasks.value = [...tasks.value, { _id: savedTask._id, name: savedTask.name, checked: savedTask.checked }];
+    newTask.value = ''; // Clear input field
+  } 
 }
 
-// FIX!!!
-const deleteTaskFromDB = async(taskID) => { 
-    const res = await fetch('http://localhost:8080/tasks/' + taskID, {
+const deleteTaskFromDB = async(_id) => { 
+    const res = await fetch('http://localhost:8080/tasks/' + _id, {
         method: 'DELETE',
         headers: {
             'content-type': 'application/json'
@@ -51,17 +53,42 @@ const deleteTaskFromDB = async(taskID) => {
     console.log(res);
 }
 
-const deleteTask = (index) => {
+const updateTaskOrder = async() => {
+    await fetch('http://localhost:8080/tasks/reorder', {
+        method: 'PUT',
+        body: JSON.stringify(tasks.value.map((task, index) => ({ _id: task._id, order: index }))),
+        headers: { 'Content-Type': 'application/json' } 
+    });
+}
+
+const updateTask = async (task) => {
+    await fetch('http://localhost:8080/tasks/' + task._id, {
+        method: 'PUT',
+        body: JSON.stringify({ checked: task.checked, name: task.name }),
+        headers: { 'Content-Type': 'application/json' }
+    });
+}
+
+const deleteTask = async (index) => {
+    const taskID = tasks.value[index]._id;
+    await deleteTaskFromDB(taskID);
     tasks.value.splice(index, 1);
 }
 
-const clearAll = () => {
-    tasks.value = [];
-    newTask.value = '';
-}
+const clearAll = async () => {
+    const res = await fetch('http://localhost:8080/tasks/deleteAll', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    });
 
-const toggleCheckbox = (index) => {
-    tasks.value[index].checked = !tasks.value[index].checked;
+    if (res.ok) {
+        tasks.value = [];
+        newTask.value = '';
+        console.log('All task cleared');
+    } else {
+        console.error('Failed to clear tasks');
+    }
+
 }
 
 const router = useRouter();
@@ -76,14 +103,137 @@ const today = ref(new Date());
 // Sestavimo format "sreda, 16. oktober"
 const formattedDate = computed(()=>`${today.value.toLocaleDateString('sl-SI', { weekday: 'long' })}, ${today.value.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' })}`);
 
+const onDragStart = (evt) => {
+  // Create an empty transparent image
+  const img = new Image();
+  img.src =
+    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='; // 1x1 transparent gif
+  evt.originalEvent.dataTransfer.setDragImage(img, 0, 0);
+};
+
+
+const playSound = (src) => {
+  const sound = new Audio(src);
+  sound.volume = 0.1; // adjust if needed
+  sound.play();
+};
+
+
+// BACKGROUND CHANGE
+const backgrounds = [
+  'praprot.jpg',
+  'skiresort_wallpaper.jpg', 
+  'sunset_wallpaper.jpg',
+  'workspace_wallpaper.jpg'
+];
+
+const blackTextBackgrounds = ['skiresort_wallpaper.jpg'];
+const whiteTextBackgrounds = ['praprot.jpg', 'sunset_wallpaper.jpg', 'workspace_wallpaper.jpg'];
+
+
+const selectedBackground = ref(); // default wallpaper
+const showMenu = ref(false);
+const showMainMenu = ref(false);
+
+const toggleMenu = () => {
+  showMenu.value = !showMenu.value;
+};
+
+const toggleMainMenu = () => {
+    showMainMenu.value = !showMainMenu.value;
+}
+
+const changeBackground = async (background) => {
+  selectedBackground.value = background;
+  await fetch('http://localhost:8080/user/wallpaper', {
+    method: 'PUT',
+    body: JSON.stringify({ wallpaper: background }),
+    headers: { 'Content-Type': 'application/json' }
+  });
+};
+
+
+const iconColorClass = computed(() => {
+  return textColorClass.value === 'text-black' ? 'icon-black' : 'icon-white';
+});
+
+
+const loading = ref(true);
+
 onMounted(async()=>{
     const data = await getTasks();
     tasks.value = data;
+
+    // Fetch current wallpaper from backend
+    try {
+        const res = await fetch('http://localhost:8080/user/wallpaper');
+        if (res.ok) {
+        const data = await res.json();
+        selectedBackground.value = data.wallpaper;
+        }
+    } catch (error) {
+        console.error('Failed to fetch wallpaper:', error);
+    }
+
+    loading.value = false;
+
+    preloadImages(backgrounds);
 })
+
+
+const handleClickOutside = (event) => {
+  const backgroundDropdown = document.querySelector('.background-dropdown');
+  const mainMenuDropdown = document.querySelector('.menu-dropdown');
+  const backgroundButton = document.querySelector('.background-menu-icon');
+  const mainMenuButton = document.querySelector('.main-menu img'); // selector for main menu button
+
+  // Close background menu if open and click is outside dropdown and button
+  if (showMenu.value) {
+    const clickedOutsideBackground = (!backgroundDropdown || !backgroundDropdown.contains(event.target)) &&
+                                    (!backgroundButton || !backgroundButton.contains(event.target));
+    if (clickedOutsideBackground) {
+      showMenu.value = false;
+    }
+  }
+
+  // Close main menu if open and click is outside dropdown and button
+  if (showMainMenu.value) {
+    const clickedOutsideMainMenu = (!mainMenuDropdown || !mainMenuDropdown.contains(event.target)) &&
+                                  (!mainMenuButton || !mainMenuButton.contains(event.target));
+    if (clickedOutsideMainMenu) {
+      showMainMenu.value = false;
+    }
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+
+const textColorClass = computed(() => {
+  if (blackTextBackgrounds.includes(selectedBackground.value)) {
+    return 'text-black';
+  } else if (whiteTextBackgrounds.includes(selectedBackground.value)) {
+    return 'text-white';
+  } else {
+    return 'text-white'; // fallback
+  }
+});
 
 </script>
 
 <template>
+<div v-if="!loading" class="center-wrapper"
+    :class="[textColorClass, { selected: true }]"
+    :style="{ background: `url('/backgrounds/${selectedBackground}') no-repeat center center fixed`, 
+              backgroundSize: 'cover',}" >
+
+
   <h1 id="title">{{ formattedDate }}</h1><br>
 
   <form @submit.prevent="addTask">
@@ -101,35 +251,87 @@ onMounted(async()=>{
     </div>
   </form><br>
 
-  <draggable v-if="tasks.length > 0" v-model="tasks" tag="ul" group="tasks" class="tasks">
+  <draggable v-if="tasks.length > 0" v-model="tasks" tag="ul" group="tasks" class="tasks" itemKey="_id" @end="updateTaskOrder" @start="onDragStart">
     <template #item="{ element: task, index }">
       <div class="task-content task-item">
         <label class="custom-checkbox">
           <input 
             type="checkbox"
             :checked="task.checked"
-            @change="toggleCheckbox(index)" /> 
+            @change=" () => {
+                task.checked = !task.checked; 
+                updateTask(task); 
+                if (task.checked) {
+                    playSound('../../public/sounds/check.mp3');
+                }
+            }"/> 
           <span class="checkmark"></span>
         </label>
 
-        <input class="task-title" v-model="task.name"/>
+        <input 
+            class="task-title" 
+            v-model="task.name" 
+            @input="updateTask(task)"
+            :class="{ done: task.checked }" 
+        />
 
         <span class="deleteTask" @click="deleteTask(index)">
-          <img class="deleteTask-icon" src="../assets/close.png" alt="Delete">
+          <img 
+            class="deleteTask-icon" 
+            :src="textColorClass === 'text-black' ? '../../public/icons/close-black.png' : '../../public/icons/close-white.png'" 
+            alt="Delete" 
+          />
+
         </span>
       </div>
     </template>
   </draggable>
+
+
+<div class="background-menu">
+  <img @click="toggleMenu" src="../../public/icons/gallery.png" alt="background-menu-icon" :class="[iconColorClass, 'background-menu-icon']" />
+
+  <div v-if="showMenu" class="background-dropdown">
+    <div 
+      v-for="(background, index) in backgrounds" 
+      :key="index" 
+      class="background-thumb"
+      :class="{ selected: selectedBackground === background }"
+      :style="{ backgroundImage: `url('../../public/backgrounds/${background}')` }"
+      @click="changeBackground(background)"
+    ></div>
+  </div>
+</div>
+
+<div class="main-menu">
+    <img @click="toggleMainMenu" src="../../public/icons/main-menu.png" alt="main-menu-icon" :class="[iconColorClass, 'main-menu-icon']">
+    <div v-if="showMainMenu" class="menu-dropdown">
+      
+        <div><button id="loginBtn" @click="goToLoginPage">Log out</button></div>
+    </div>
+</div>
+
+
   <br>
-  <button id="loginBtn" @click="goToLoginPage">Log out</button>
+</div>
 </template>
 
 <style scoped>
-.tasks {
-  color: white;
+
+.center-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;  
+    min-height: 100vh;
+    background-color: black;
 }
 
 #title {
+  padding-top: 30px;
   color: white;
   font-size: 40px;
 }
@@ -150,7 +352,7 @@ onMounted(async()=>{
   width: 20px;
   height: 20px;
   border: 1px solid rgba(255, 255, 255, 0.5); /* Opaque border when unchecked */
-  opacity: 0.7;
+  opacity: 1;
   background-color: transparent; /* Transparent background when unchecked */
   border-radius: 4px;
   transition: background-color 0.3s, border 0.8s;
@@ -178,7 +380,6 @@ onMounted(async()=>{
   transform: rotate(-45deg);
 }
 
-
 .deleteTask {
   display: flex;                   
   justify-content: center;        
@@ -187,7 +388,7 @@ onMounted(async()=>{
   height: 25px;                      
   border-radius: 50%;              
   color: rgba(255, 255, 255, 0.373);                      
-  font-size: 16px;                
+  font-size: 22px;                
   cursor: pointer;                   
   transition: background-color 0.3s, transform 0.3s;
   line-height: 1;
@@ -200,10 +401,11 @@ onMounted(async()=>{
 .deleteTask-icon {
   width: 12px;
   height: 12px;
-  opacity: 0.3;
+  opacity: 0.6;
 }
 
 .tasks {
+  color: white;
   background: rgba(255, 255, 255, 0.1); /* White background with 10% opacity */
   border-radius: 15px;
   padding: 20px;
@@ -215,7 +417,7 @@ onMounted(async()=>{
   width: 600px;
   text-align: center;
   color: white;
-  font-size: 20px;
+  font-size: 50px; /*neč ne nardi*/
   margin-top: 20px;
 }
 
@@ -243,7 +445,7 @@ onMounted(async()=>{
   color: white;
   height: 25px;
   width: 500px;
-  font-size: 18px;
+  font-size: 22px;
   flex-grow: 1;
   display: flex;
   align-items: center;
@@ -282,7 +484,7 @@ onMounted(async()=>{
   color: white;
   padding: 5px 5px;
   text-align: center;
-  font-size: 15px;
+  font-size: 16px;
   opacity: 0.6;
   transition: 0.3s;
 }
@@ -293,13 +495,176 @@ onMounted(async()=>{
   cursor: pointer;
 }
 
-#loginBtn {
-    border-radius: 10px;
-    font-size: 17px;
-    padding: 6px;
-    width: 100px;
-    background-color: transparent;
-    backdrop-filter: blur(10px); /* Blur effect */
-    color: #fff
+
+
+
+.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+  transition: color 0.3s ease, opacity 0.3s ease;
 }
+
+
+.text-black {
+  color: black !important;
+}
+
+.text-black input,
+.text-black button,
+.text-black .task-title,
+.text-black label,
+.text-black #title {
+  color: black !important;
+  /* Make sure inputs and labels also switch */
+}
+.text-black input::placeholder {
+  color: black !important;
+  opacity: 0.6;
+}
+
+
+.text-white {
+  color: white !important;
+}
+
+.text-white input,
+.text-white button,
+.text-white .task-title,
+.text-white label,
+.text-white #title {
+  color: white !important;
+}
+.text-white input::placeholder {
+  color: white !important;
+  opacity: 0.6;
+}
+
+.text-black .custom-checkbox .checkmark {
+  border-color: rgba(0, 0, 0, 0.5); /* black-ish border when text is black */
+}
+
+.text-white .custom-checkbox .checkmark {
+  border-color: rgba(255, 255, 255, 0.5); /* white-ish border when text is white */
+}
+
+.icon-black {
+  filter: invert(0); /* no invert, normal color */
+}
+
+.icon-white {
+  filter: invert(1); /* invert colors */
+}
+
+.background-menu-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.background-menu-icon:hover {
+  transform: scale(1.2);
+}
+
+.background-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    color: white;
+    font-size: 15px;
+}
+
+.background-dropdown {
+  display: flex;
+  top: 0;          /* align vertically */
+  right: 100%;  
+  flex-direction: row;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 10px;
+  position: absolute;
+  z-index: 1001;
+}
+
+.background-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.background-thumb.selected {
+  border: 2px solid white; /* white border for the selected thumbnail */
+  box-sizing: border-box;  /* ensure border doesn't affect size */
+}
+
+.background-thumb:hover {
+  transform: scale(1.05);
+  border-color: white;
+}
+
+.main-menu {
+  position: fixed;
+  top: 20px;
+  left: 20px; /* top-left corner */
+  z-index: 1000;
+  color: white;
+  font-size: 15px;
+}
+
+.main-menu-icon {
+  width: 30px;
+  height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.main-menu-icon:hover {
+  transform: scale(1.2);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3); /* match background menu style */
+  padding: 15px;
+  border-radius: 10px;
+  min-width: 160px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px); /* stronger blur like background-menu */
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1001;
+}
+
+#loginBtn {
+  width: 100%;
+  font-size: 16px;        
+  border-radius: 6px;    
+  border: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 1002;
+  padding: 5px;
+}
+
+#loginBtn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+
+
 </style>
