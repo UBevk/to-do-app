@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+app.use(cors({
+  origin: 'https://ubevk.github.io'  // your GitHub Pages URL
+}));
 
 const app = express();
 app.use(cors());
@@ -147,7 +150,3 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-app.use(cors({
-  origin: 'https://ubevk.github.io'  // your GitHub Pages URL
-}));
