@@ -62,11 +62,9 @@
 
 body {
   font-size: 25px;
-  background-size: cover;
-  display: flex;
-      justify-content: center; /* Center horizontally */
-      align-items: center; /* Center vertically */
-      text-align: center; /* Center text alignment */
+  background: black;
+  margin: 0;
+  padding: 0;
   transition:
     color 0.5s,
     background-color 0.5s;
