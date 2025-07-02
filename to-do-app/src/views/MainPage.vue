@@ -337,9 +337,7 @@ const textColorClass = computed(() => {
     box-sizing: border-box;
 }*/
 .center-wrapper {
-  min-height: 100dvh;
-  min-width: 100vw;
-  height: 100vh; /* fallback */
+  height: 100dvh;
   width: 100vw;
   margin: 0;
   padding: 0;

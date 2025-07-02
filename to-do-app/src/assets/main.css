@@ -29,12 +29,10 @@ a, .green {
 
 @media (max-width: 640px) {
     #app {
-      padding: 1rem;
       font-size: 0.9rem;
     }
   
     a, .green {
-      padding: 2px;
       font-size: 0.9rem;
     }
   }
