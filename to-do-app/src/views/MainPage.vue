@@ -363,7 +363,8 @@ const textColorClass = computed(() => {
 }
 
 .custom-checkbox input:checked + .checkmark {
-  background-color: rgb(33, 243, 0); /* Checked color */
+/*  background-color: rgb(33, 243, 0); /* Checked color */
+  background-color: aqua;
   border: none;
 }
 
@@ -672,9 +673,15 @@ const textColorClass = computed(() => {
 /*telefon*/
 @media (max-width: 640px) {
   .center-wrapper {
-    background-attachment: fixed;
-  }
-  
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important; /* ensures full coverage */
+        min-height: 100vh; /* full viewport height */
+        width: 100vw; /* full viewport width */
+        overflow-x: hidden; /* prevent horizontal scroll */
+        background-attachment: scroll !important;
+    }
+
   .tasks, #newTask {
     width: 90vw; /* Use 90% of the viewport width */
     max-width: 600px; /* Limit max width */
