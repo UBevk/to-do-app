@@ -337,7 +337,9 @@ const textColorClass = computed(() => {
     box-sizing: border-box;
 }*/
 .center-wrapper {
-  height: 100vh;
+  min-height: 100dvh;
+  min-width: 100vw;
+  height: 100vh; /* fallback */
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -691,13 +693,15 @@ const textColorClass = computed(() => {
 /*telefon*/
 @media (max-width: 640px) {
   .center-wrapper {
-    padding: 10px; /* add some breathing room */
-    background-position: top center; /* maybe shift bg image */
+    min-height: 100dvh;
+    min-width: 100vw;
+    height: 100vh;
+    width: 100vw;
+    background-position: top center;
   }
 
-  /* Example: Adjust text inside .center-wrapper */
   .center-wrapper h1 {
-    font-size: 1.5rem; /* smaller headings */
+    font-size: 1.5rem;
   }
 
   .tasks, #newTask {
