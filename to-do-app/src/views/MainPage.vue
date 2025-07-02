@@ -281,7 +281,7 @@ const textColorClass = computed(() => {
         <span class="deleteTask" @click="deleteTask(index)">
           <img 
             class="deleteTask-icon" 
-            :src="textColorClass === 'text-black' ? '../../public/icons/close-black.png' : '../../public/icons/close-white.png'" 
+            :src="textColorClass === 'text-black' ? '/to-do-app/icons/close-black.png' : '/to-do-app/public/icons/close-white.png'" 
             alt="Delete" 
           />
 
