@@ -281,7 +281,7 @@ const textColorClass = computed(() => {
         <span class="deleteTask" @click="deleteTask(index)">
           <img 
             class="deleteTask-icon" 
-            :src="textColorClass === 'text-black' ? '../../public/icons/close-black.png' : '../../public/icons/close-white.png'" 
+            :src="textColorClass === 'text-black' ? backendUrl + 'close-black.png' : backendUrl + 'close-white.png'" 
             alt="Delete" 
           />
 
@@ -322,20 +322,6 @@ const textColorClass = computed(() => {
 
 <style scoped>
 
-/*.center-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;  
-    min-height: 100vh;
-    background-color: black;
-    margin: 0 auto;
-    padding: 0;
-    box-sizing: border-box;
-}*/
 .center-wrapper {
   height: 100dvh;
   width: 100vw;
@@ -516,8 +502,6 @@ const textColorClass = computed(() => {
   transition: 0.3s;
   cursor: pointer;
 }
-
-
 
 
 .done {
@@ -708,27 +692,6 @@ const textColorClass = computed(() => {
   }
 }
 
-
-
-
-
-
-
-
-
-
-.center-wrapper {
-  border: 2px solid red;
-}
-.tasks {
-  border: 2px solid blue;
-}
-.main-menu {
-  border: 2px solid green;
-}
-.background-menu {
-  border: 2px solid orange;
-}
 
 
 </style>
