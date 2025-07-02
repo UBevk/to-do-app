@@ -281,7 +281,7 @@ const textColorClass = computed(() => {
         <span class="deleteTask" @click="deleteTask(index)">
           <img 
             class="deleteTask-icon" 
-            :src="textColorClass === 'text-black' ? backendUrl + 'close-black.png' : backendUrl + 'close-white.png'" 
+            :src="textColorClass === 'text-black' ? '/to-do-app/icons/close-black.png' : '/to-do-app/icons/close-white.png'" 
             alt="Delete" 
           />
 
@@ -292,7 +292,7 @@ const textColorClass = computed(() => {
 
 
 <div class="background-menu">
-  <img @click="toggleMenu" src="../../public/icons/gallery.png" alt="background-menu-icon" :class="[iconColorClass, 'background-menu-icon']" />
+  <img @click="toggleMenu" src="/to-do-app/icons/gallery.png" alt="background-menu-icon" :class="[iconColorClass, 'background-menu-icon']" />
 
   <div v-if="showMenu" class="background-dropdown">
     <div 
@@ -366,8 +366,8 @@ const textColorClass = computed(() => {
 }
 
 .custom-checkbox input:checked + .checkmark {
-/*  background-color: rgb(33, 243, 0);  Checked color */
-  background-color: rgb(30, 0, 255);
+  background-color: rgb(33, 243, 0); /* Checked color 
+  background-color: rgb(30, 0, 255);*/
   border: none;
 }
 
