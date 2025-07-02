@@ -61,7 +61,6 @@
 
 
 body {
-  background: url('./background.jpg') no-repeat center center fixed;
   font-size: 25px;
   background-size: cover;
   display: flex;

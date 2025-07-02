@@ -353,7 +353,6 @@ const textColorClass = computed(() => {
   background-position: center center;
 }
 
-
 #title {
   padding-top: 30px;
   color: white;
