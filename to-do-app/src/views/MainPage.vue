@@ -18,7 +18,7 @@ const preloadImages = (imageUrls) => {
 };
 
 const getTasks = async() => {
-    const res = await fetch(`${backendUrl}/tasks`, {
+    const res = await fetch(backendUrl+'/tasks', {
         method: 'GET',
     })
     const data = await res.json()
@@ -34,7 +34,7 @@ const getTasks = async() => {
 
 const addTask = async() => {
   if (newTask.value.trim()) { 
-    const res = await fetch(`${backendUrl}/tasks`, {
+    const res = await fetch(backendUrl+'/tasks', {
         method: 'POST',
         body: JSON.stringify({ name: newTask.value, checked: false }),
         headers: { 'content-type': 'application/json' }
@@ -47,7 +47,7 @@ const addTask = async() => {
 }
 
 const deleteTaskFromDB = async(_id) => { 
-    const res = await fetch(`${backendUrl}/tasks/` + _id, {
+    const res = await fetch(backendUrl+'/tasks/' + _id, {
         method: 'DELETE',
         headers: {
             'content-type': 'application/json'
@@ -57,7 +57,7 @@ const deleteTaskFromDB = async(_id) => {
 }
 
 const updateTaskOrder = async() => {
-    await fetch(`${backendUrl}/tasks/reorder`, {
+    await fetch(backendUrl+'/tasks/reorder', {
         method: 'PUT',
         body: JSON.stringify(tasks.value.map((task, index) => ({ _id: task._id, order: index }))),
         headers: { 'Content-Type': 'application/json' } 
@@ -65,7 +65,7 @@ const updateTaskOrder = async() => {
 }
 
 const updateTask = async (task) => {
-    await fetch(`${backendUrl}/tasks/` + task._id, {
+    await fetch(backendUrl+'/tasks/' + task._id, {
         method: 'PUT',
         body: JSON.stringify({ checked: task.checked, name: task.name }),
         headers: { 'Content-Type': 'application/json' }
@@ -79,7 +79,7 @@ const deleteTask = async (index) => {
 }
 
 const clearAll = async () => {
-    const res = await fetch(`${backendUrl}/tasks/deleteAll`, {
+    const res = await fetch(backendUrl+'/tasks/deleteAll', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -148,7 +148,7 @@ const toggleMainMenu = () => {
 
 const changeBackground = async (background) => {
   selectedBackground.value = background;
-  await fetch(`${backendUrl}/user/wallpaper`, {
+  await fetch(backendUrl+'/user/wallpaper', {
     method: 'PUT',
     body: JSON.stringify({ wallpaper: background }),
     headers: { 'Content-Type': 'application/json' }
@@ -169,7 +169,7 @@ onMounted(async()=>{
 
     // Fetch current wallpaper from backend
     try {
-        const res = await fetch(`${backendUrl}/user/wallpaper`);
+        const res = await fetch(backendUrl+'/user/wallpaper');
         if (res.ok) {
         const data = await res.json();
         selectedBackground.value = data.wallpaper;
