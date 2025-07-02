@@ -231,9 +231,9 @@ const textColorClass = computed(() => {
 </script>
 
 <template>
-<div v-if="!loading" class="center-wrapper"
+<div class="center-wrapper"
     :class="[textColorClass, { selected: true }]"
-    :style="{ background: `url('/to-do-app/backgrounds/${selectedBackground}') no-repeat center center fixed`, 
+    :style="{ background: `url('/to-do-app/backgrounds/${selectedBackground}') no-repeat center center`, 
               backgroundSize: 'cover',}" >
 
 
