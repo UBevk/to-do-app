@@ -146,3 +146,8 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+const cors = require('cors');
+app.use(cors({
+  origin: 'https://ubevk.github.io'  // your GitHub Pages URL
+}));
