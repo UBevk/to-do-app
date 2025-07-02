@@ -671,6 +671,10 @@ const textColorClass = computed(() => {
 
 /*telefon*/
 @media (max-width: 640px) {
+  .center-wrapper {
+    background-attachment: fixed;
+  }
+  
   .tasks, #newTask {
     width: 90vw; /* Use 90% of the viewport width */
     max-width: 600px; /* Limit max width */

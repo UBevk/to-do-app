@@ -1,6 +1,6 @@
 @import './base.css';
 
-#app {
+html, body, #app {
   width: 100%;
   margin: 0 auto;
   font-weight: normal;
@@ -20,7 +20,7 @@ a, .green {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
     #app {
       padding: 1rem;
       font-size: 0.9rem;
@@ -29,6 +29,15 @@ a, .green {
     a, .green {
       padding: 2px;
       font-size: 0.9rem;
+    }
+
+    .center-wrapper {
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important; /* ensures full coverage */
+        min-height: 100vh; /* full viewport height */
+        width: 100vw; /* full viewport width */
+        overflow-x: hidden; /* prevent horizontal scroll */
     }
   }
   
