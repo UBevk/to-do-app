@@ -721,4 +721,5 @@ const textColorClass = computed(() => {
   border: 2px solid orange;
 }
 
+
 </style>
