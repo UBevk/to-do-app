@@ -322,7 +322,7 @@ const textColorClass = computed(() => {
 
 <style scoped>
 
-.center-wrapper {
+/*.center-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center; 
@@ -335,7 +335,22 @@ const textColorClass = computed(() => {
     margin: 0 auto;
     padding: 0;
     box-sizing: border-box;
+}*/
+.center-wrapper {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
+
 
 #title {
   padding-top: 30px;
@@ -676,13 +691,14 @@ const textColorClass = computed(() => {
 /*telefon*/
 @media (max-width: 640px) {
   .center-wrapper {
-        background-position: center center !important;
-        background-repeat: no-repeat !important;
-        background-size: cover !important; /* ensures full coverage */
-        height: 100%; /* full viewport height */
-        width: 100%; /* full viewport width */
-        overflow-x: hidden; /* prevent horizontal scroll */
-    }
+    padding: 10px; /* add some breathing room */
+    background-position: top center; /* maybe shift bg image */
+  }
+
+  /* Example: Adjust text inside .center-wrapper */
+  .center-wrapper h1 {
+    font-size: 1.5rem; /* smaller headings */
+  }
 
   .tasks, #newTask {
     width: 90vw; /* Use 90% of the viewport width */
