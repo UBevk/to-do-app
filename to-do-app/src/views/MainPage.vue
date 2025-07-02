@@ -332,6 +332,9 @@ const textColorClass = computed(() => {
     background-size: cover;  
     min-height: 100vh;
     background-color: black;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 #title {
@@ -696,5 +699,26 @@ const textColorClass = computed(() => {
   }
 }
 
+
+
+
+
+
+
+
+
+
+.center-wrapper {
+  border: 2px solid red;
+}
+.tasks {
+  border: 2px solid blue;
+}
+.main-menu {
+  border: 2px solid green;
+}
+.background-menu {
+  border: 2px solid orange;
+}
 
 </style>
