@@ -367,7 +367,7 @@ const textColorClass = computed(() => {
 
 .custom-checkbox input:checked + .checkmark {
 /*  background-color: rgb(33, 243, 0); /* Checked color */
-  background-color: rgb(255, 21, 0);
+  background-color: rgb(30, 0, 255);
   border: none;
 }
 
@@ -680,7 +680,7 @@ const textColorClass = computed(() => {
         background-repeat: no-repeat;
         background-size: cover !important; /* ensures full coverage */
         min-height: 100vh; /* full viewport height */
-        width: 100vw; /* full viewport width */
+        width: 100%; /* full viewport width */
         overflow-x: hidden; /* prevent horizontal scroll */
         background-attachment: scroll !important;
     }
