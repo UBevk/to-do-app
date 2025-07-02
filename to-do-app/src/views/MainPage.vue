@@ -690,6 +690,17 @@ const textColorClass = computed(() => {
   #title {
     font-size: 28px; /* Smaller font on mobile */
   }
+
+  #newTask {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  #clearAll {
+    align-self: flex-start;
+    margin-left: 10px;
+  }
 }
 
 
