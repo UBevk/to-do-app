@@ -673,8 +673,8 @@ const textColorClass = computed(() => {
 /*telefon*/
 @media (max-width: 640px) {
   .center-wrapper {
-        background-position: center center !important;
-        background-repeat: no-repeat !important;
+        background-position: center center;
+        background-repeat: no-repeat;
         background-size: cover !important; /* ensures full coverage */
         min-height: 100vh; /* full viewport height */
         width: 100vw; /* full viewport width */
