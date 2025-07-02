@@ -265,7 +265,7 @@ const textColorClass = computed(() => {
                 task.checked = !task.checked; 
                 updateTask(task); 
                 if (task.checked) {
-                    playSound('../../public/sounds/check.mp3');
+                    playSound('/to-do-app/sounds/check.mp3');
                 }
             }"/> 
           <span class="checkmark"></span>
@@ -292,7 +292,7 @@ const textColorClass = computed(() => {
 
 
 <div class="background-menu">
-  <img @click="toggleMenu" src="/to-do-app/icons/gallery.png" alt="background-menu-icon" :class="[iconColorClass, 'background-menu-icon']" />
+  <img @click="toggleMenu" src="../../public/icons/gallery.png" alt="background-menu-icon" :class="[iconColorClass, 'background-menu-icon']" />
 
   <div v-if="showMenu" class="background-dropdown">
     <div 
