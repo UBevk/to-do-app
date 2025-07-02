@@ -676,13 +676,12 @@ const textColorClass = computed(() => {
 /*telefon*/
 @media (max-width: 640px) {
   .center-wrapper {
-        background-position: center center;
-        background-repeat: no-repeat;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
         background-size: cover !important; /* ensures full coverage */
         min-height: 100vh; /* full viewport height */
         width: 100%; /* full viewport width */
         overflow-x: hidden; /* prevent horizontal scroll */
-        background-attachment: scroll !important;
     }
 
   .tasks, #newTask {
