@@ -679,8 +679,8 @@ const textColorClass = computed(() => {
         background-position: center center !important;
         background-repeat: no-repeat !important;
         background-size: cover !important; /* ensures full coverage */
-        height: 100vh; /* full viewport height */
-        width: 100vw; /* full viewport width */
+        height: 100%; /* full viewport height */
+        width: 100%; /* full viewport width */
         overflow-x: hidden; /* prevent horizontal scroll */
     }
 
