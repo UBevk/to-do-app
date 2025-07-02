@@ -382,8 +382,8 @@ const textColorClass = computed(() => {
 }
 
 .custom-checkbox input:checked + .checkmark {
-/*  background-color: rgb(33, 243, 0); /* Checked color */
-  background-color: rgb(30, 0, 255);
+  background-color: rgb(33, 243, 0); /* Checked color 
+  background-color: rgb(30, 0, 255);*/
   border: none;
 }
 
