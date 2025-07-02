@@ -337,7 +337,6 @@ const textColorClass = computed(() => {
     box-sizing: border-box;
 }*/
 .center-wrapper {
-  position: fixed;
   min-height: 100dvh;
   min-width: 100vw;
   height: 100vh; /* fallback */
@@ -692,15 +691,8 @@ const textColorClass = computed(() => {
 }
 
 /*telefon*/
-@media (max-width: 640px) {
-  .center-wrapper {
-    min-height: 100dvh;
-    min-width: 100vw;
-    height: 100vh;
-    width: 100vw;
-    background-position: top center;
-  }
-
+@media (max-width: 600px) {
+  
   .center-wrapper h1 {
     font-size: 1.5rem;
   }
