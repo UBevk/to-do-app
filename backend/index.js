@@ -5,8 +5,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
 
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://ubevk.github.io']  // your GitHub Pages URL
+  origin: ['http://localhost:5174', 'https://ubevk.github.io']  // your GitHub Pages URL
 })); 
 
 app.use(express.json());
@@ -81,7 +85,7 @@ app.post('/tasks', async (req, res) => {
 app.delete('/tasks/deleteAll', async (req, res) => {
     try {
         await Task.deleteMany({});
-        res.json({ mssage: 'ALl tasks deleted successfully' });
+        res.json({ message: 'ALl tasks deleted successfully' });
     } catch {
         res.status(500).json({ error: 'Error deleting tasks' });
     }
@@ -149,6 +153,23 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-app.use(cors({
-  origin: 'https://ubevk.github.io'  // your GitHub Pages URL
-}));
+
+
+// wallpaper upload
+const backgroundsDir = path.join(__dirname, '../to-do-app/public/backgrounds');
+
+if (!fs.existsSync(backgroundsDir)) {
+  fs.mkdirSync(backgroundsDir);
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, '../to-do-app/public/backgrounds/'),
+  filename: (req, file, cb) => cb(null, file.originalname),
+});
+const upload = multer({ storage });
+
+
+app.post('/upload-background', upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  res.json({ message: 'Upload successful', filename: req.file.filename });
+});

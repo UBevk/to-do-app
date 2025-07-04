@@ -11,13 +11,24 @@ const backendUrl = window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
     : 'https://to-do-app-4-u2e6.onrender.com';
 
-
+/*
 const preloadImages = (imageUrls) => {
   imageUrls.forEach(url => {
     const img = new Image();
     img.src = `/backgrounds/${url}`;
   });
+};*/
+const preloadImages = (imageUrls) => {
+  if (!Array.isArray(imageUrls.value)) {
+    console.error('Expected imageUrls.value to be an array, but got:', imageUrls.value);
+    return;
+  }
+  imageUrls.value.forEach(url => {
+    const img = new Image();
+    img.src = `/to-do-app/backgrounds/${url}`;
+  });
 };
+
 
 const getTasks = async() => {
     const res = await fetch(backendUrl+'/tasks', {
@@ -125,12 +136,12 @@ const playSound = (src) => {
 
 
 // BACKGROUND CHANGE
-const backgrounds = [
+const backgrounds = ref([
   'praprot.jpg',
   'skiresort_wallpaper.jpg', 
   'sunset_wallpaper.jpg',
   'workspace_wallpaper.jpg'
-];
+]);
 
 const blackTextBackgrounds = ['skiresort_wallpaper.jpg'];
 const whiteTextBackgrounds = ['praprot.jpg', 'sunset_wallpaper.jpg', 'workspace_wallpaper.jpg'];
@@ -230,13 +241,67 @@ const textColorClass = computed(() => {
   }
 });
 
+// add background button
+const bgFileInput = ref(null)
+const bgFileName = ref('')
+
+const triggerFileInput = () => {
+    bgFileInput.value.click()
+}
+
+const handleBgFileChange = async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    bgFileName.value = file.name;
+
+    // Upload to backend
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(backendUrl + '/upload-background', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!res.ok) throw new Error('Upload failed');
+      
+      const data = await res.json();
+
+      // Add new filename to backgrounds array
+      backgrounds.value.push(data.filename);
+
+      // Select newly uploaded background (backend serves at /backgrounds/filename)
+      selectedBackground.value = data.filename;
+
+      // Optionally, update user wallpaper on backend
+      await fetch(backendUrl + '/user/wallpaper', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallpaper: data.filename })
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload background image.');
+    }
+  }
+}
+
+const backgroundUrl = computed(() => {
+  if (selectedBackground.value.startsWith('http')) {
+    return selectedBackground.value;
+  }
+  return `/to-do-app/backgrounds/${selectedBackground.value}`;
+});
+
+
 </script>
 
 <template>
 <div class="center-wrapper"
     :class="[textColorClass, { selected: true }]"
-    :style="{ background: `url('/to-do-app/backgrounds/${selectedBackground}') no-repeat center center`, 
-              backgroundSize: 'cover',}" >
+    :style="{ background: `url('${backgroundUrl}') no-repeat center center`, backgroundSize: 'cover',}" >
 
 
   <h1 id="title">{{ formattedDate }}</h1><br>
@@ -303,8 +368,15 @@ const textColorClass = computed(() => {
       class="background-thumb"
       :class="{ selected: selectedBackground === background }"
       :style="{ backgroundImage: `url('/to-do-app/backgrounds/${background}')` }"
-      @click="changeBackground(background)"
-    ></div>
+      @click="changeBackground(background)">
+    </div>
+
+    <input type="file" ref="bgFileInput" class="hidden" @change="handleBgFileChange" accept="image/*" 
+            style="opacity: 0; position: absolute; width: 0; height: 0;"/>
+
+    <button id="addBackground">
+        <img @click="triggerFileInput" src="../../public/icons/add.png" width="40" />
+    </button>
   </div>
 </div>
 
@@ -580,7 +652,6 @@ const textColorClass = computed(() => {
     top: 20px;
     right: 20px;
     z-index: 1000;
-    color: white;
     font-size: 15px;
 }
 
@@ -705,6 +776,16 @@ const textColorClass = computed(() => {
   }
 }
 
+#addBackground {
+  background-color: rgba(114, 114, 114, 0.411);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#addBackground:hover {
+    background-color: rgba(168, 167, 167, 0.548);
+}
 
 
 </style>

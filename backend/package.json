@@ -14,7 +14,8 @@
     "cors": "^2.8.5",
     "dotenv": "^17.0.1",
     "express": "^4.21.1",
-    "mongoose": "^8.7.2"
+    "mongoose": "^8.7.2",
+    "multer": "^2.0.1"
   },
   "devDependencies": {
     "tsx": "^4.19.1"
