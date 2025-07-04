@@ -7,7 +7,9 @@ const name = ref(''); // dobim glede na to kdo je log-inan
 const newTask = ref('');
 const tasks = ref([]); 
 
-const backendUrl = 'https://to-do-app-4-u2e6.onrender.com';
+const backendUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://to-do-app-4-u2e6.onrender.com';
 
 
 const preloadImages = (imageUrls) => {
