@@ -7,15 +7,28 @@ const name = ref(''); // dobim glede na to kdo je log-inan
 const newTask = ref('');
 const tasks = ref([]); 
 
-const backendUrl = 'https://to-do-app-4-u2e6.onrender.com';
+const backendUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://to-do-app-4-u2e6.onrender.com';
 
-
+/*
 const preloadImages = (imageUrls) => {
   imageUrls.forEach(url => {
     const img = new Image();
     img.src = `/backgrounds/${url}`;
   });
+};*/
+const preloadImages = (imageUrls) => {
+  if (!Array.isArray(imageUrls.value)) {
+    console.error('Expected imageUrls.value to be an array, but got:', imageUrls.value);
+    return;
+  }
+  imageUrls.value.forEach(url => {
+    const img = new Image();
+    img.src = `/to-do-app/backgrounds/${url}`;
+  });
 };
+
 
 const getTasks = async() => {
     const res = await fetch(backendUrl+'/tasks', {
@@ -123,12 +136,12 @@ const playSound = (src) => {
 
 
 // BACKGROUND CHANGE
-const backgrounds = [
+const backgrounds = ref([
   'praprot.jpg',
   'skiresort_wallpaper.jpg', 
   'sunset_wallpaper.jpg',
   'workspace_wallpaper.jpg'
-];
+]);
 
 const blackTextBackgrounds = ['skiresort_wallpaper.jpg'];
 const whiteTextBackgrounds = ['praprot.jpg', 'sunset_wallpaper.jpg', 'workspace_wallpaper.jpg'];
@@ -228,13 +241,67 @@ const textColorClass = computed(() => {
   }
 });
 
+// add background button
+const bgFileInput = ref(null)
+const bgFileName = ref('')
+
+const triggerFileInput = () => {
+    bgFileInput.value.click()
+}
+
+const handleBgFileChange = async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    bgFileName.value = file.name;
+
+    // Upload to backend
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(backendUrl + '/upload-background', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!res.ok) throw new Error('Upload failed');
+      
+      const data = await res.json();
+
+      // Add new filename to backgrounds array
+      backgrounds.value.push(data.filename);
+
+      // Select newly uploaded background (backend serves at /backgrounds/filename)
+      selectedBackground.value = data.filename;
+
+      // Optionally, update user wallpaper on backend
+      await fetch(backendUrl + '/user/wallpaper', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallpaper: data.filename })
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload background image.');
+    }
+  }
+}
+
+const backgroundUrl = computed(() => {
+  if (selectedBackground.value.startsWith('http')) {
+    return selectedBackground.value;
+  }
+  return `/to-do-app/backgrounds/${selectedBackground.value}`;
+});
+
+
 </script>
 
 <template>
 <div class="center-wrapper"
     :class="[textColorClass, { selected: true }]"
-    :style="{ background: `url('/to-do-app/backgrounds/${selectedBackground}') no-repeat center center`, 
-              backgroundSize: 'cover',}" >
+    :style="{ background: `url('${backgroundUrl}') no-repeat center center`, backgroundSize: 'cover',}" >
 
 
   <h1 id="title">{{ formattedDate }}</h1><br>
@@ -265,7 +332,7 @@ const textColorClass = computed(() => {
                 task.checked = !task.checked; 
                 updateTask(task); 
                 if (task.checked) {
-                    playSound('../../public/sounds/check.mp3');
+                    playSound('/to-do-app/sounds/check.mp3');
                 }
             }"/> 
           <span class="checkmark"></span>
@@ -281,7 +348,7 @@ const textColorClass = computed(() => {
         <span class="deleteTask" @click="deleteTask(index)">
           <img 
             class="deleteTask-icon" 
-            :src="textColorClass === 'text-black' ? '../../public/icons/close-black.png' : '../../public/icons/close-white.png'" 
+            :src="textColorClass === 'text-black' ? '/to-do-app/icons/close-black.png' : '/to-do-app/icons/close-white.png'" 
             alt="Delete" 
           />
 
@@ -301,8 +368,15 @@ const textColorClass = computed(() => {
       class="background-thumb"
       :class="{ selected: selectedBackground === background }"
       :style="{ backgroundImage: `url('/to-do-app/backgrounds/${background}')` }"
-      @click="changeBackground(background)"
-    ></div>
+      @click="changeBackground(background)">
+    </div>
+
+    <input type="file" ref="bgFileInput" class="hidden" @change="handleBgFileChange" accept="image/*" 
+            style="opacity: 0; position: absolute; width: 0; height: 0;"/>
+
+    <button id="addBackground">
+        <img @click="triggerFileInput" src="../../public/icons/add.png" width="40" />
+    </button>
   </div>
 </div>
 
@@ -322,20 +396,6 @@ const textColorClass = computed(() => {
 
 <style scoped>
 
-/*.center-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;  
-    min-height: 100vh;
-    background-color: black;
-    margin: 0 auto;
-    padding: 0;
-    box-sizing: border-box;
-}*/
 .center-wrapper {
   height: 100dvh;
   width: 100vw;
@@ -518,8 +578,6 @@ const textColorClass = computed(() => {
 }
 
 
-
-
 .done {
   text-decoration: line-through;
   opacity: 0.6;
@@ -594,7 +652,6 @@ const textColorClass = computed(() => {
     top: 20px;
     right: 20px;
     z-index: 1000;
-    color: white;
     font-size: 15px;
 }
 
@@ -706,28 +763,28 @@ const textColorClass = computed(() => {
   #title {
     font-size: 28px; /* Smaller font on mobile */
   }
+
+  #newTask {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  #clearAll {
+    align-self: flex-start;
+    margin-left: 10px;
+  }
 }
 
-
-
-
-
-
-
-
-
-
-.center-wrapper {
-  border: 2px solid red;
+#addBackground {
+  background-color: rgba(114, 114, 114, 0.411);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
-.tasks {
-  border: 2px solid blue;
-}
-.main-menu {
-  border: 2px solid green;
-}
-.background-menu {
-  border: 2px solid orange;
+
+#addBackground:hover {
+    background-color: rgba(168, 167, 167, 0.548);
 }
 
 
