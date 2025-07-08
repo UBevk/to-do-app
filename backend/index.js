@@ -10,7 +10,7 @@ const path = require('path');
 const multer = require('multer');
 
 app.use(cors({
-  origin: ['http://localhost:5174', 'https://ubevk.github.io']  // your GitHub Pages URL
+  origin: ['http://localhost:5173', 'https://ubevk.github.io']  // your GitHub Pages URL
 })); 
 
 app.use(express.json());

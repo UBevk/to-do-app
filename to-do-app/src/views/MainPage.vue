@@ -656,10 +656,15 @@ const backgroundUrl = computed(() => {
 }
 
 .background-dropdown {
+  max-width: 300px;
+  height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
   top: 0;          /* align vertically */
   right: 100%;  
-  flex-direction: row;
   gap: 10px;
   background: rgba(0, 0, 0, 0.3);
   padding: 10px;
@@ -669,7 +674,8 @@ const backgroundUrl = computed(() => {
 }
 
 .background-thumb {
-  width: 50px;
+  /*width: 50px;*/
+  width: 100%;
   height: 50px;
   border-radius: 8px;
   background-size: cover;
