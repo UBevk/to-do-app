@@ -33,6 +33,10 @@ const preloadImages = (imageUrls) => {
 const getTasks = async() => {
     const res = await fetch(backendUrl+'/tasks', {
         method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
     })
     const data = await res.json()
 
@@ -50,7 +54,10 @@ const addTask = async() => {
     const res = await fetch(backendUrl+'/tasks', {
         method: 'POST',
         body: JSON.stringify({ name: newTask.value, checked: false }),
-        headers: { 'content-type': 'application/json' }
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
     })
 
     const savedTask = await res.json();
@@ -63,7 +70,8 @@ const deleteTaskFromDB = async(_id) => {
     const res = await fetch(backendUrl+'/tasks/' + _id, {
         method: 'DELETE',
         headers: {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
     })
     console.log(res);
@@ -73,7 +81,10 @@ const updateTaskOrder = async() => {
     await fetch(backendUrl+'/tasks/reorder', {
         method: 'PUT',
         body: JSON.stringify(tasks.value.map((task, index) => ({ _id: task._id, order: index }))),
-        headers: { 'Content-Type': 'application/json' } 
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
     });
 }
 
@@ -81,7 +92,10 @@ const updateTask = async (task) => {
     await fetch(backendUrl+'/tasks/' + task._id, {
         method: 'PUT',
         body: JSON.stringify({ checked: task.checked, name: task.name }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
     });
 }
 
@@ -94,7 +108,10 @@ const deleteTask = async (index) => {
 const clearAll = async () => {
     const res = await fetch(backendUrl+'/tasks/deleteAll', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
     });
 
     if (res.ok) {
@@ -109,9 +126,10 @@ const clearAll = async () => {
 
 const router = useRouter();
 
+/*
 const goToLoginPage = () => {
     router.push({name: 'Login'});
-}
+} */
 
 // Pridobimo trenutno ime dneva in datum
 const today = ref(new Date());
@@ -164,7 +182,10 @@ const changeBackground = async (background) => {
   await fetch(backendUrl+'/user/wallpaper', {
     method: 'PUT',
     body: JSON.stringify({ wallpaper: background }),
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
+    }
   });
 };
 
@@ -277,7 +298,10 @@ const handleBgFileChange = async (event) => {
       // Optionally, update user wallpaper on backend
       await fetch(backendUrl + '/user/wallpaper', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
         body: JSON.stringify({ wallpaper: data.filename })
       });
 
@@ -294,6 +318,12 @@ const backgroundUrl = computed(() => {
   }
   return `/to-do-app/backgrounds/${selectedBackground.value}`;
 });
+
+// LOGOUT
+const logout = () => {
+  localStorage.removeItem('token');
+  router.push({ name: 'Login' });
+};
 
 
 </script>
@@ -385,7 +415,7 @@ const backgroundUrl = computed(() => {
     <img @click="toggleMainMenu" src="../../public/icons/main-menu.png" alt="main-menu-icon" :class="[iconColorClass, 'main-menu-icon']">
     <div v-if="showMainMenu" class="menu-dropdown">
       
-        <div><button id="loginBtn" @click="goToLoginPage">Log out</button></div>
+        <div><button id="loginBtn" @click="logout">Log out</button></div>
     </div>
 </div>
 
