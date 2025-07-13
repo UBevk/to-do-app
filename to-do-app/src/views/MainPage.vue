@@ -201,12 +201,24 @@ onMounted(async()=>{
     const data = await getTasks();
     tasks.value = data;
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push({ name: 'Login' });
+      return;
+    }
+
     // Fetch current wallpaper from backend
     try {
-        const res = await fetch(backendUrl+'/user/wallpaper');
+        const res = await fetch(backendUrl + '/user/wallpaper', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
         if (res.ok) {
-        const data = await res.json();
-        selectedBackground.value = data.wallpaper;
+            const data = await res.json();
+            selectedBackground.value = data.wallpaper;
         }
     } catch (error) {
         console.error('Failed to fetch wallpaper:', error);
@@ -282,6 +294,9 @@ const handleBgFileChange = async (event) => {
     try {
       const res = await fetch(backendUrl + '/upload-background', {
         method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
         body: formData
       });
       
