@@ -202,7 +202,7 @@ app.post('/register', async (req, res) => {
   if (!name || !password) return res.status(400).json({ error: 'Name and password required' });
 
   const userExists = await User.findOne({ name });
-  if (userExists) return res.status(400).json({ error: 'User exists' });
+  if (userExists) return res.status(400).json({ error: 'The user already exists.' });
 
   const hashed = await bcrypt.hash(password, 10);
   const user = new User({ name, password: hashed });
@@ -217,10 +217,10 @@ app.post('/login', async (req, res) => {
   if (!name || !password) return res.status(400).json({ error: 'Name and password required' });
 
   const user = await User.findOne({ name });
-  if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+  if (!user) return res.status(400).json({ error: 'Wrong username.' });
 
   const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(400).json({ error: 'Invalid credentials' });
+  if (!valid) return res.status(400).json({ error: 'Wrong password.' });
 
   const token = jwt.sign({ userId: user._id, name: user.name }, SECRET, { expiresIn: '2h' });
   res.json({ token });
