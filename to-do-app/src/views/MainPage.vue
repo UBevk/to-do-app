@@ -131,12 +131,6 @@ const goToLoginPage = () => {
     router.push({name: 'Login'});
 } */
 
-// Pridobimo trenutno ime dneva in datum
-const today = ref(new Date());
-
-// Sestavimo format "sreda, 16. oktober"
-const formattedDate = computed(()=>`${today.value.toLocaleDateString('sl-SI', { weekday: 'long' })}, ${today.value.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' })}`);
-
 const onDragStart = (evt) => {
   // Create an empty transparent image
   const img = new Image();
@@ -341,6 +335,36 @@ const logout = () => {
 };
 
 
+// SPREMEMBA PLANIRANEGA DNEVA
+
+// Pridobimo trenutno ime dneva in datum
+const today = ref(new Date());
+
+// Sestavimo format "sreda, 16. oktober"
+const formattedDate = computed(()=>
+    `${today.value.toLocaleDateString('sl-SI', { weekday: 'long' })}, ${today.value.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' })}`
+);
+
+const formattedDayBefore = computed( () => {
+    return formattedDateWithOffset(today.value, -1);
+});
+
+const formattedDayAfter = computed( () => {
+    return formattedDateWithOffset(today.value, 1);
+});
+
+function formattedDateWithOffset(baseDate, offsetDays) {
+    const date = new Date(baseDate);
+    date.setDate(date.getDate() + offsetDays);
+    return `${date.toLocaleDateString('sl-SI', { weekday: 'short' })}, ${date.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' })}`;
+} 
+
+//const plannedDate = ref(new Date());
+
+const handleDayChange = (offset) => {
+    today.value = new Date(today.value.setDate(today.value.getDate() + offset));
+}
+
 </script>
 
 <template>
@@ -349,7 +373,11 @@ const logout = () => {
     :style="{ background: `url('${backgroundUrl}') no-repeat center center`, backgroundSize: 'cover',}" >
 
 
-  <h1 id="title">{{ formattedDate }}</h1><br>
+  <div id="day-slider"> 
+    <div id="day-before"><span id="day-before-text" @click="handleDayChange(-1)">{{ formattedDayBefore }}</span></div>
+    <span id="title">{{ formattedDate }}</span><br>
+    <div id="day-after"><span id="day-after-text" @click="handleDayChange(1)">{{ formattedDayAfter }}</span></div>
+  </div>
 
   <form @submit.prevent="addTask">
     <div id="newTask">
@@ -428,10 +456,15 @@ const logout = () => {
 
 <div class="main-menu">
     <img @click="toggleMainMenu" src="../../public/icons/main-menu.png" alt="main-menu-icon" :class="[iconColorClass, 'main-menu-icon']">
-    <div v-if="showMainMenu" class="menu-dropdown">
-      
-        <div><button id="loginBtn" @click="logout">Log out</button></div>
-    </div>
+    <transition name="menu-fade">
+        <div v-if="showMainMenu" class="menu-dropdown">
+            <div id="options">
+                <a class="option" href="#">Option 1</a>
+                <a class="option" href="#">Option 2</a>
+            </div>
+            <div><button id="loginBtn" @click="logout">Log out</button></div>
+        </div>
+    </transition>
 </div>
 
 
@@ -454,12 +487,6 @@ const logout = () => {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-}
-
-#title {
-  padding-top: 30px;
-  color: white;
-  font-size: 40px;
 }
 
 .custom-checkbox {
@@ -719,7 +746,6 @@ const logout = () => {
 }
 
 .background-thumb {
-  /*width: 50px;*/
   width: 100%;
   height: 50px;
   border-radius: 8px;
@@ -755,31 +781,54 @@ const logout = () => {
   cursor: pointer;
   transition: transform 0.2s ease;
   user-select: none;
+  z-index: 1000;
 }
 
 .main-menu-icon:hover {
   transform: scale(1.2);
+  z-index: 1000;
 }
 
 .menu-dropdown {
-  position: absolute;
-  top: 40px;
-  left: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.3); /* match background menu style */
   padding: 15px;
-  border-radius: 10px;
   min-width: 160px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px); /* stronger blur like background-menu */
   -webkit-backdrop-filter: blur(10px);
-  z-index: 1001;
+  z-index: 1000;
+  transition: left 0.4s ease-in-out;
+  align-items: center;
+}
+
+#options {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    width: 90%;
+}
+
+.option {   
+   width: 100%;
+   margin-bottom: 10px;
+   padding: 5px;
+   border-radius: 10px;
+   color: white;
+}
+
+.option:hover {
+    background-color: rgb(255, 255, 255, 0.1);
 }
 
 #loginBtn {
-  width: 100%;
+  width: 60%;
   font-size: 16px;        
   border-radius: 6px;    
   border: none;
@@ -789,11 +838,83 @@ const logout = () => {
   transition: background-color 0.3s ease;
   z-index: 1002;
   padding: 5px;
+  position: absolute;
+  bottom: 40px;
+  transform: translateX(-50%);
 }
 
 #loginBtn:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }
+
+#addBackground {
+  background-color: rgba(114, 114, 114, 0.411);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#addBackground:hover {
+    background-color: rgba(168, 167, 167, 0.548);
+}
+
+
+#day-slider {
+    margin-top: 30px;
+    background-color: rgba(255, 0, 0, 0);
+    height: 120px;
+    width: 600px;
+    display: flex;
+    user-select: none;
+    white-space: nowrap;
+}
+
+#day-after, #day-before {
+    width: 240px;
+    height: 120px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+}
+
+#day-after {
+    justify-content: flex-start;
+    margin-left: 20px;
+}
+
+#day-before {
+    justify-content: flex-end;
+    margin-right: 20px;
+}
+  
+
+#day-after-text, #day-before-text {
+    cursor: pointer;
+    opacity: 0.8;
+    padding: 10px;
+    border-radius: 15px;
+    transition: background-color 0.1s ease-in, transform 0.1s ease-in;
+}
+
+#day-after-text:hover, #day-before-text:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px); 
+    -webkit-backdrop-filter: blur(10px); 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    transform: scale(1.05);
+}
+
+#title {
+  color: white;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 450px;
+}
+
+
 
 /*telefon*/
 @media (max-width: 600px) {
@@ -816,27 +937,27 @@ const logout = () => {
   }
 
   #newTask {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    white-space: nowrap;
   }
 
   #clearAll {
-    align-self: flex-start;
-    margin-left: 10px;
+    margin-right: 10px;
+
   }
 }
 
-#addBackground {
-  background-color: rgba(114, 114, 114, 0.411);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+
+.menu-fade-enter-active, .menu-fade-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
 }
 
-#addBackground:hover {
-    background-color: rgba(168, 167, 167, 0.548);
+.menu-fade-enter-from, .menu-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 
-
+.menu-fade-enter-to, .menu-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
 </style>
