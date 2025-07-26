@@ -85,21 +85,40 @@ const TaskSchema = new mongoose.Schema({
   name: String,
   checked: Boolean,
   order: Number,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // DODAJ
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  date: String   // shrani datum v formatu 'YYYY-MM-DD' -> SPREMENI V DATE
 });
 
 const Task = mongoose.model('Task', TaskSchema);
 
 // Get all tasks
 app.get('/tasks', async (req, res) => {
-  const tasks = await Task.find({ user: req.user._id }).sort({ order: 1 });
+  const { date } = req.query;
+
+  if (!date) {
+    return res.status(400).json({ error: 'Date query parameter is required' });
+  }
+
+  const tasks = await Task.find({ 
+    user: req.user._id,
+    date: date
+  }).sort({ order: 1 });
+  
   res.json(tasks);
 });
 
 // Create a new task
 app.post('/tasks', async (req, res) => {
+  const { date, ...rest } = req.body;
   const taskCount = await Task.countDocuments({ user: req.user._id });
-  const newTask = new Task({ ...req.body, order: taskCount, user: req.user._id });
+  const newTask = new Task({
+     //...req.body,   // tukaj notri je tudi že vključen date
+     ...rest,
+     order: taskCount, 
+     user: req.user._id,
+     date
+  });
+
   await newTask.save();
   res.json(newTask);
 });
@@ -177,7 +196,7 @@ app.listen(PORT, () => {
 
 
 
-// wallpaper upload
+// WALLPAPER UPLOAD
 const backgroundsDir = path.join(__dirname, '../to-do-app/public/backgrounds');
 
 if (!fs.existsSync(backgroundsDir)) {
