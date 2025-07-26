@@ -31,29 +31,39 @@ const preloadImages = (imageUrls) => {
 
 
 const getTasks = async() => {
-    const res = await fetch(backendUrl+'/tasks', {
+    const date = today.value.toISOString().slice(0, 10);
+
+    const res = await fetch(`${backendUrl}/tasks?date=${date}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
     })
+
     const data = await res.json()
 
     return data.sort((a, b) => a.order - b.order).map(item => ({
         _id: item._id,
         name: item.name,
         checked: item.checked,
-        order: item.order
+        order: item.order,
+        date: item.date
     })); 
     //tasks.value = data;
 }
 
 const addTask = async() => {
   if (newTask.value.trim()) { 
+    const date = today.value.toISOString().slice(0, 10);
+
     const res = await fetch(backendUrl+'/tasks', {
         method: 'POST',
-        body: JSON.stringify({ name: newTask.value, checked: false }),
+        body: JSON.stringify({ 
+          name: newTask.value, 
+          checked: false,
+          date 
+        }),
         headers: {
           'content-type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -61,7 +71,15 @@ const addTask = async() => {
     })
 
     const savedTask = await res.json();
-    tasks.value = [...tasks.value, { _id: savedTask._id, name: savedTask.name, checked: savedTask.checked }];
+
+    tasks.value = [
+        ...tasks.value, 
+        { 
+          _id: savedTask._id, 
+          name: savedTask.name, 
+          checked: savedTask.checked,
+          date: savedTask.date
+        }];
     newTask.value = ''; // Clear input field
   } 
 }
@@ -170,6 +188,8 @@ const toggleMenu = () => {
 const toggleMainMenu = () => {
     showMainMenu.value = !showMainMenu.value;
 }
+
+// SPREMEMBA OZADJA
 
 const changeBackground = async (background) => {
   selectedBackground.value = background;
@@ -361,8 +381,12 @@ function formattedDateWithOffset(baseDate, offsetDays) {
 
 //const plannedDate = ref(new Date());
 
-const handleDayChange = (offset) => {
+const handleDayChange = async (offset) => {
     today.value = new Date(today.value.setDate(today.value.getDate() + offset));
+
+    tasks.value = [];
+    const data = await getTasks();
+    tasks.value = data;
 }
 
 </script>
@@ -565,7 +589,7 @@ const handleDayChange = (offset) => {
   padding: 20px;
   padding-top: 5px;
   padding-bottom: 5px;
-  backdrop-filter: blur(10px); /* Blur effect */
+  backdrop-filter: blur(5px); /* Blur effect */
   -webkit-backdrop-filter: blur(10px); /* Safari support */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
   width: 600px;
@@ -573,6 +597,7 @@ const handleDayChange = (offset) => {
   color: white;
   font-size: 50px; /*neč ne nardi*/
   margin-top: 20px;
+  /*border: solid rgb(255, 255, 255) 1px;*/
 }
 
 .task-item {
@@ -597,9 +622,9 @@ const handleDayChange = (offset) => {
   border: none;
   outline: none;
   color: white;
-  height: 25px;
+  height: 28px;
   width: 500px;
-  font-size: 22px;
+  font-size: 21px;
   flex-grow: 1;
   display: flex;
   align-items: center;
@@ -609,7 +634,7 @@ const handleDayChange = (offset) => {
   background: rgba(255, 255, 255, 0.1); /* White background with 10% opacity */
   border-radius: 15px;
   padding: 10px;
-  backdrop-filter: blur(10px); /* Blur effect */
+  backdrop-filter: blur(4px); /* Blur effect */
   -webkit-backdrop-filter: blur(10px); /* Safari support */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
   width: 600px;
@@ -617,6 +642,7 @@ const handleDayChange = (offset) => {
   color: white;
   display: flex;
   justify-content: space-between;
+  /*border: solid rgb(255, 255, 255) 1px;*/
 }
 
 #newTaskField {
