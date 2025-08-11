@@ -197,14 +197,14 @@ app.listen(PORT, () => {
 
 
 // WALLPAPER UPLOAD
-const backgroundsDir = path.join(__dirname, '../to-do-app/public/backgrounds');
+const backgroundsDir = path.join(__dirname, 'public', 'backgrounds');
 
 if (!fs.existsSync(backgroundsDir)) {
-  fs.mkdirSync(backgroundsDir);
+  fs.mkdirSync(backgroundsDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, '../to-do-app/public/backgrounds/'),
+  destination: (req, file, cb) => cb(null, backgroundsDir),
   filename: (req, file, cb) => cb(null, file.originalname),
 });
 const upload = multer({ storage });
