@@ -1,0 +1,488 @@
+.center-wrapper {
+  height: 100dvh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.custom-checkbox input {
+  display: none; /* Hide the default checkbox */
+}
+
+.custom-checkbox .checkmark {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Opaque border when unchecked */
+  opacity: 1;
+  background-color: transparent; /* Transparent background when unchecked */
+  border-radius: 4px;
+  transition: background-color 0.3s, border 0.8s;
+}
+
+.custom-checkbox input:checked + .checkmark {
+  background-color: rgb(33, 243, 0); /* Checked color 
+  background-color: rgb(30, 0, 255);*/
+  border: none;
+}
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked + .checkmark::after {
+  display: block;
+  left: 5.5px;
+  top: 6px;
+  width: 10px;
+  height: 5px;
+  border: solid white;
+  border-width: 0 0 2px 2px;
+  transform: rotate(-45deg);
+}
+
+.deleteTask {
+  display: flex;                   
+  justify-content: center;        
+  align-items: center;               
+  width: 25px;                      
+  height: 25px;                      
+  border-radius: 50%;              
+  color: rgba(255, 255, 255, 0.373);                      
+  font-size: 22px;                
+  cursor: pointer;                   
+  transition: background-color 0.3s, transform 0.3s;
+  line-height: 1;
+}
+
+.deleteTask:hover {
+  background-color: rgba(47, 47, 47, 0.373);
+}
+
+.deleteTask-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+}
+
+.tasks {
+  color: white;
+  background: rgba(255, 255, 255, 0.1); /* White background with 10% opacity */
+  border-radius: 15px;
+  padding: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  backdrop-filter: blur(5px); /* Blur effect */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+  width: 600px;
+  text-align: center;
+  color: white;
+  font-size: 50px; /*neč ne nardi*/
+  margin-top: 20px;
+  /*border: solid rgb(255, 255, 255) 1px;*/
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 10px 0;
+  border: black;
+  border-width: 4px;
+}
+
+.task-content{
+  display: flex;
+  align-items: left;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.task-title {
+  background: transparent;
+  padding-left: 15px;
+  border: none;
+  outline: none;
+  color: white;
+  height: 28px;
+  width: 500px;
+  font-size: 21px;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+#newTask {
+  background: rgba(255, 255, 255, 0.1); /* White background with 10% opacity */
+  border-radius: 15px;
+  padding: 10px;
+  backdrop-filter: blur(4px); /* Blur effect */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+  width: 600px;
+  text-align: center;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  /*border: solid rgb(255, 255, 255) 1px;*/
+}
+
+#newTaskField {
+  background: transparent;
+  padding-left: 10px;
+  padding-top: 5px;
+  border: none;
+  outline: none;
+  color: white;
+  height: 25px;
+  width: 500px;
+  font-size: 18px;
+}
+
+#clearAll {
+  display: flex;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 5px 5px;
+  text-align: center;
+  font-size: 16px;
+  opacity: 0.6;
+  transition: 0.3s;
+}
+
+#clearAll:hover {
+  opacity: 1;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+
+.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+
+.text-black {
+  color: black !important;
+}
+
+.text-black input,
+.text-black button,
+.text-black .task-title,
+.text-black label,
+.text-black #title {
+  color: black !important;
+  /* Make sure inputs and labels also switch */
+}
+.text-black input::placeholder {
+  color: black !important;
+  opacity: 0.6;
+}
+
+
+.text-white {
+  color: white !important;
+}
+
+.text-white input,
+.text-white button,
+.text-white .task-title,
+.text-white label,
+.text-white #title {
+  color: white !important;
+}
+.text-white input::placeholder {
+  color: white !important;
+  opacity: 0.6;
+}
+
+.text-black .custom-checkbox .checkmark {
+  border-color: rgba(0, 0, 0, 0.5); /* black-ish border when text is black */
+}
+
+.text-white .custom-checkbox .checkmark {
+  border-color: rgba(255, 255, 255, 0.5); /* white-ish border when text is white */
+}
+
+.icon-black {
+  filter: invert(0); /* no invert, normal color */
+}
+
+.icon-white {
+  filter: invert(1); /* invert colors */
+}
+
+.background-menu-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.background-menu-icon:hover {
+  transform: scale(1.2);
+}
+
+.background-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-size: 15px;
+}
+
+.background-dropdown {
+  max-width: 300px;
+  height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  top: 0;          /* align vertically */
+  right: 100%;  
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 10px;
+  position: absolute;
+  z-index: 1001;
+}
+
+.background-thumb {
+  width: 100%;
+  height: 50px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.background-thumb.selected {
+  border: 2px solid white; /* white border for the selected thumbnail */
+  box-sizing: border-box;  /* ensure border doesn't affect size */
+}
+
+.background-thumb:hover {
+  transform: scale(1.05);
+  border-color: white;
+}
+
+.main-menu {
+  position: fixed;
+  top: 20px;
+  left: 20px; /* top-left corner */
+  z-index: 1000;
+  color: white;
+  font-size: 15px;
+}
+
+.main-menu-icon {
+  width: 30px;
+  height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  user-select: none;
+  z-index: 1000;
+}
+
+.main-menu-icon:hover {
+  transform: scale(1.2);
+  z-index: 1000;
+}
+
+.menu-dropdown {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3); /* match background menu style */
+  padding: 15px;
+  min-width: 160px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px); /* stronger blur like background-menu */
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: left 0.4s ease-in-out;
+  align-items: center;
+}
+
+#options {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    width: 90%;
+}
+
+.option {   
+   width: 100%;
+   margin-bottom: 10px;
+   padding: 5px;
+   border-radius: 10px;
+   color: white;
+}
+
+.option:hover {
+    background-color: rgb(255, 255, 255, 0.1);
+}
+
+#loginBtn {
+  width: 60%;
+  font-size: 16px;        
+  border-radius: 6px;    
+  border: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 1002;
+  padding: 5px;
+  position: absolute;
+  bottom: 40px;
+  transform: translateX(-50%);
+}
+
+#loginBtn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#addBackground {
+  background-color: rgba(114, 114, 114, 0.411);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#addBackground:hover {
+    background-color: rgba(168, 167, 167, 0.548);
+}
+
+
+#day-slider {
+    margin-top: 30px;
+    background-color: rgba(255, 0, 0, 0);
+    height: 120px;
+    width: 600px;
+    display: flex;
+    user-select: none;
+    white-space: nowrap;
+}
+
+#day-after, #day-before {
+    width: 240px;
+    height: 120px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+}
+
+#day-after {
+    justify-content: flex-start;
+    margin-left: 20px;
+}
+
+#day-before {
+    justify-content: flex-end;
+    margin-right: 20px;
+}
+  
+
+#day-after-text, #day-before-text {
+    cursor: pointer;
+    opacity: 0.8;
+    padding: 10px;
+    border-radius: 15px;
+    transition: background-color 0.1s ease-in, transform 0.1s ease-in;
+}
+
+#day-after-text:hover, #day-before-text:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px); 
+    -webkit-backdrop-filter: blur(10px); 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    transform: scale(1.05);
+}
+
+#title {
+  color: white;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 450px;
+}
+
+
+
+/*telefon*/
+@media (max-width: 600px) {
+  
+  .center-wrapper h1 {
+    font-size: 1.5rem;
+  }
+
+  .tasks, #newTask {
+    width: 90vw; /* Use 90% of the viewport width */
+    max-width: 600px; /* Limit max width */
+  }
+
+  .task-title, #newTaskField {
+    width: 70vw; /* Allow input fields to shrink on smaller screens */
+  }
+
+  #title {
+    font-size: 28px; /* Smaller font on mobile */
+  }
+
+  #newTask {
+    white-space: nowrap;
+  }
+
+  #clearAll {
+    margin-right: 10px;
+
+  }
+}
+
+
+.menu-fade-enter-active, .menu-fade-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.menu-fade-enter-from, .menu-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.menu-fade-enter-to, .menu-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
