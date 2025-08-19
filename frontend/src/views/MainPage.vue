@@ -269,12 +269,21 @@ const handleClickOutside = (event) => {
   }
 };
 
+const windowWidth = ref(window.innerWidth);
+
+const handleResize = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
+  window.addEventListener('resize', handleResize);
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
+  window.removeEventListener('resize', handleResize);
 });
 
 
@@ -361,9 +370,16 @@ const logout = () => {
 const today = ref(new Date());
 
 // Sestavimo format "sreda, 16. oktober"
-const formattedDate = computed(()=>
-    `${today.value.toLocaleDateString('sl-SI', { weekday: 'long' })}, ${today.value.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' })}`
-);
+const formattedDate = computed(() => {
+  if (windowWidth.value < 500) {
+    // short format for narrow screens
+    return today.value.toLocaleDateString('sl-SI', { weekday: 'short', day: 'numeric', month: 'short' });
+  } else {
+    // full format for wider screens
+    return `${today.value.toLocaleDateString('sl-SI', { weekday: 'long' })}, ${today.value.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' })}`;
+  }
+});
+
 
 const formattedDayBefore = computed( () => {
     return formattedDateWithOffset(today.value, -1);
@@ -374,10 +390,16 @@ const formattedDayAfter = computed( () => {
 });
 
 function formattedDateWithOffset(baseDate, offsetDays) {
-    const date = new Date(baseDate);
-    date.setDate(date.getDate() + offsetDays);
-    return `${date.toLocaleDateString('sl-SI', { weekday: 'short' })}, ${date.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' })}`;
-} 
+  const date = new Date(baseDate);
+  date.setDate(date.getDate() + offsetDays);
+
+  if (windowWidth.value < 500) {
+    return date.toLocaleDateString('sl-SI', { weekday: 'short', day: 'numeric', month: 'short' });
+  } else {
+    return `${date.toLocaleDateString('sl-SI', { weekday: 'short' })}, ${date.toLocaleDateString('sl-SI', { day: 'numeric', month: 'short' })}`;
+  }
+}
+
 
 //const plannedDate = ref(new Date());
 

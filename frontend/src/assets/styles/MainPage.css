@@ -390,10 +390,12 @@
     margin-top: 30px;
     background-color: rgba(255, 0, 0, 0);
     height: 120px;
-    width: 600px;
+    width: 100%;
     display: flex;
     user-select: none;
     white-space: nowrap;
+    align-items: center;
+    justify-content: center;
 }
 
 #day-after, #day-before {
@@ -406,12 +408,10 @@
 
 #day-after {
     justify-content: flex-start;
-    margin-left: 20px;
 }
 
 #day-before {
     justify-content: flex-end;
-    margin-right: 20px;
 }
   
 
@@ -438,7 +438,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 450px;
+  width: 350px;
 }
 
 
