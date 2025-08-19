@@ -9,4 +9,13 @@
 export default {
   name: 'App',
 };
+
+
 </script>
+
+
+<style>
+body {
+    background-color: black;
+}
+</style>

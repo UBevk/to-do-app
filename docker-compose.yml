@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  web:
+    build: .
+    container_name: urh-to-do-app
+    restart: unless-stopped
+    ports:
+      - "6970:3000"
+    environment:
+      NODE_ENV: production
